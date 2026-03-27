@@ -1,13 +1,10 @@
 <?php
 
-declare(strict_types=1);
-
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return response()->json([
-        'app' => 'Tenant application',
+        'app' => 'Central application',
         'status' => 'ok',
-        'tenant' => tenant('id'),
     ]);
 });

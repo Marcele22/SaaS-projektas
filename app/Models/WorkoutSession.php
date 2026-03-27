@@ -2,36 +2,43 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class WorkoutSession extends Model
 {
-    use BelongsToTenant;
+    public const STATUS_SCHEDULED = 'scheduled';
+    public const STATUS_CANCELLED = 'cancelled';
+    public const STATUS_ATTENDED = 'attended';
+    public const STATUS_MISSED = 'missed';
 
     protected $fillable = [
-        'tenant_id',
-        'user_id',
         'customer_subscription_id',
-        'date',
+        'session_date',
         'start_time',
         'end_time',
+        'activity',
+        'trainer_name',
+        'location',
         'status',
+        'cancelled_at',
+        'attended_at',
     ];
 
     protected $casts = [
-        'date' => 'date',
-        'start_time' => 'datetime:H:i',
-        'end_time' => 'datetime:H:i',
+        'session_date' => 'date',
+        'cancelled_at' => 'datetime',
+        'attended_at' => 'datetime',
     ];
 
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    public function subscription()
+    public function subscription(): BelongsTo
     {
         return $this->belongsTo(CustomerSubscription::class, 'customer_subscription_id');
+    }
+
+    public function scopeScheduled(Builder $query): Builder
+    {
+        return $query->where('status', self::STATUS_SCHEDULED);
     }
 }

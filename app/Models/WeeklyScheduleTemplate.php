@@ -2,29 +2,35 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class WeeklyScheduleTemplate extends Model
 {
-    use BelongsToTenant;
-
     protected $fillable = [
-        'tenant_id',
-        'user_id',
-        'weekday',
+        'customer_subscription_id',
+        'day_of_week',
         'start_time',
         'end_time',
+        'activity',
+        'trainer_name',
+        'location',
+        'is_active',
     ];
 
     protected $casts = [
-        'weekday' => 'integer',
-        'start_time' => 'datetime:H:i',
-        'end_time' => 'datetime:H:i',
+        'day_of_week' => 'integer',
+        'is_active' => 'boolean',
     ];
 
-    public function user()
+    public function subscription(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(CustomerSubscription::class, 'customer_subscription_id');
+    }
+
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->where('is_active', true);
     }
 }
